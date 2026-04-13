@@ -73,16 +73,19 @@ const localCategorize = (articles) => {
   return articles.map(article => {
     const text = `${article.title} ${article.description || ''}`.toLowerCase();
     
-    // 1. SAFETY: High-priority tragedy/accident/health detection (STRICTLY BLOCKED FROM SPORTS)
-    const isTragedy = text.includes('death') || text.includes('killed') || text.includes('falls from') || text.includes('dead') || text.includes('suicide') || text.includes('murder') || text.includes('killed');
-    const isHospital = text.includes('hospital') || text.includes('patient') || text.includes('surgery') || text.includes('medical');
+    // 1. SAFETY & High-Priority Politics Detection (Prioritize Context)
+    const isTragedy = text.includes('death') || text.includes('killed') || text.includes('falls from') || text.includes('dead') || text.includes('suicide') || text.includes('murder');
+    const isPoliticsContext = text.includes('minister') || text.includes('rajnath') || text.includes('modi') || text.includes('yogi') || text.includes('cm ') || text.includes('pm ') || text.includes('government') || text.includes('sansad') || text.includes('election');
     
     if (isTragedy) return 'Crime';
+    if (isPoliticsContext) return 'Politics';
+
+    const isHospital = text.includes('hospital') || text.includes('patient') || text.includes('surgery') || text.includes('medical');
     if (isHospital) return 'General';
 
     // 2. SPECIFIC WHITELISTS
     if (text.includes('iit') || text.includes('iim') || text.includes('course') || text.includes('admission')) return 'Education';
-    if (text.includes('ipl') || text.includes('cricket') || text.includes('wicket') || text.includes('khel')) return 'Sports';
+    if (text.includes('ipl') || text.includes('cricket') || text.includes('wicket')) return 'Sports';
     if (text.includes('arrest') || text.includes('police')) return 'Crime';
 
     // 3. KEYWORD LOOP
