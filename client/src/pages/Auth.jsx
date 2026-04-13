@@ -19,17 +19,16 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
-      const payload = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { name: formData.name, email: formData.email, password: formData.password };
-
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, payload);
+      const { name, email, password } = formData;
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/${isLogin ? 'login' : 'signup'}`, 
+        isLogin ? { email, password } : { name, email, password }
+      );
       
       login(res.data, res.data.token);
       navigate('/home');
     } catch (err) {
-      setError(err.response?.data?.error || "An error occurred. Please try again.");
+      console.error(err);
+      setError(err.response?.data?.error || 'An error occurred. Please check your connection.');
     } finally {
       setLoading(false);
     }
