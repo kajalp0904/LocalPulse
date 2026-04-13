@@ -73,15 +73,19 @@ const localCategorize = (articles) => {
   return articles.map(article => {
     const text = `${article.title} ${article.description || ''}`.toLowerCase();
     
-    // SAFETY: High-priority tragic/accident detection (never Sports)
-    if (text.includes('death') || text.includes('killed') || text.includes('falls from') || text.includes('dead') || text.includes('suicide')) return 'Crime';
-    if (text.includes('hospital') || text.includes('patient') || text.includes('surgery')) return 'General';
+    // 1. SAFETY: High-priority tragedy/accident/health detection (STRICTLY BLOCKED FROM SPORTS)
+    const isTragedy = text.includes('death') || text.includes('killed') || text.includes('falls from') || text.includes('dead') || text.includes('suicide') || text.includes('murder') || text.includes('killed');
+    const isHospital = text.includes('hospital') || text.includes('patient') || text.includes('surgery') || text.includes('medical');
+    
+    if (isTragedy) return 'Crime';
+    if (isHospital) return 'General';
 
-    // Check for exact matches and priority
+    // 2. SPECIFIC WHITELISTS
     if (text.includes('iit') || text.includes('iim') || text.includes('course') || text.includes('admission')) return 'Education';
-    if (text.includes('ipl') || text.includes('cricket') || text.includes('wicket')) return 'Sports';
+    if (text.includes('ipl') || text.includes('cricket') || text.includes('wicket') || text.includes('khel')) return 'Sports';
     if (text.includes('arrest') || text.includes('police')) return 'Crime';
 
+    // 3. KEYWORD LOOP
     for (const [category, words] of Object.entries(KEYWORDS)) {
       if (words.some(word => text.includes(word))) return category;
     }
