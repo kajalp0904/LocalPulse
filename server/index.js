@@ -44,6 +44,11 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// Root Route for health check
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'LocalPulse API is running smoothly', timestamp: new Date() });
+});
+
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
